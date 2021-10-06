@@ -81,6 +81,20 @@ exports.superAdminMiddleware = (req, res, next) => {
   next();
 };
 
+
+
+/**
+ * 
+ * @description this middleware ensure only super admin role
+ *  can access it 
+ */
+ exports.managerMiddleware = (req, res, next) => {
+  if (req.user.data.role !== "manager") {
+    return res.status(200).json({ message: "Super Admin access denied" });
+  }
+  next();
+};
+
 // function paginatedResults(model,name) {
 //   return async (req,res,next) =>{
 

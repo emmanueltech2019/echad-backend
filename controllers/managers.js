@@ -28,7 +28,7 @@ exports.register = (req, res) => {
         email,
         address,
         username,
-        role:"admin"
+        role:"manager"
       });
 
       newAdmin
@@ -37,7 +37,7 @@ exports.register = (req, res) => {
           let token = jwt.sign(
             {
               // exp: Math.floor  (Date.now() / 1000) + 60 * 60,
-              data: { id: resp._id },
+              data: { id: resp._id,role:resp.role },
             },
             APP_SECRET
           );
@@ -71,27 +71,26 @@ exports.login = (req, res) => {
     if (admin) {
       let isPasswordValid = bcrypt.compareSync(password, admin.password);
       if (isPasswordValid) {
-        if(admin.role=="admin"){
-          let token = jwt.sign(
-            {
-              // exp: Math.floor  (Date.now() / 1000) + 60 * 60,
-              data: { id: admin._id },
-            },
-            APP_SECRET
-          );
-          res.status(200).json({
-            token,
-            message: "login successful",
-            admin: {
-              _id: admin._id,
-              fullname: admin.fullname,
-            },
-          });
-
+        if(admin.role=="manager"){
+            let token = jwt.sign(
+              {
+                // exp: Math.floor  (Date.now() / 1000) + 60 * 60,
+                data: { id: admin._id,role:admin.role },
+              },
+              APP_SECRET
+            );
+            res.status(200).json({
+              token,
+              message: "login successful",
+              admin: {
+                _id: admin._id,
+                fullname: admin.fullname,
+              },
+            });
         }else{
-          res.status(400).json({
-            message: "unauthorized access",
-          });
+            res.status(400).json({
+                message:"wrong portal you are not a manager"
+            })
         }
       } else {
         res.status(400).json({
@@ -104,6 +103,24 @@ exports.login = (req, res) => {
 
 exports.profileDetails = (req, res) => {
   const { id } = req.user.data;
+  Admin.findOne({ _id: id,role:'manager' }, (err, admin) => {
+    if (err) {
+      return res.status(400).json({
+        message: "an error occured",
+      });
+    }
+    if (admin) {
+      return res.status(200).json({
+        message: "success",
+        admin,
+      });
+    }
+  });
+};
+
+exports.profileDetails2 = (req, res) => {
+  const { id } = req.params;
+  console.log(req.params)
   Admin.findOne({ _id: id }, (err, admin) => {
     if (err) {
       return res.status(400).json({
@@ -120,32 +137,43 @@ exports.profileDetails = (req, res) => {
 };
 
 exports.totalUsers = (req, res) => {
-  Users.find({})
-    .then((users) => {
-      return res.status(200).json({
-        users,
-      });
-    })
-    .catch((err) => {
-      return res.status(400).json({
-        message: "an error occured",
-      });
-    });
+  
+    const { id } = req.user.data;
+  Admin.findOne({ _id: id,role:'manager' }, (err, admin) => {
+      if(admin){
+          Users.find({manager:admin._id})
+            .then((users) => {
+              return res.status(200).json({
+                users,
+              });
+            })
+            .catch((err) => {
+              return res.status(400).json({
+                message: "an error occured",
+              });
+            });
+      }
+  })
 };
 
 
 exports.totalSavers = (req, res) => {
-  Savings.find({})
-    .then((savers) => {
-      return res.status(200).json({
-        savers,
-      });
+  const { id } = req.user.data;
+  Admin.findOne({ _id: id,role:'manager' }, (err, admin) => {
+      if(admin){
+        Savings.find({manager:admin._id})
+          .then((savers) => {
+            return res.status(200).json({
+              savers,
+            });
+          })
+          .catch((err) => {
+            return res.status(400).json({
+              message: "an error occured",
+            });
+          });
+      }
     })
-    .catch((err) => {
-      return res.status(400).json({
-        message: "an error occured",
-      });
-    });
 };
 
 exports.topups = (req, res) => {
@@ -702,7 +730,7 @@ exports.approveTerminate = (req, res) => {
 
 
 
-exports.mangers=(req,res)=>{
+exports.managers=(req,res)=>{
   Admin.find({role:"manager"})
   .then((users) => {
     return res.status(200).json({

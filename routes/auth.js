@@ -15,6 +15,7 @@ const {
   updatePic
 } = require("../controllers/auth");
 const { requireSignin, parser } = require("../common-middlewares/index");
+const { mangers } = require("../controllers/admin");
 router.post("/register", register);
 router.post("/login", login);
 router.put("/updateaccount", requireSignin, updateAccount);
@@ -26,4 +27,6 @@ router.post("/withdraw/savings",requireSignin,withdrawSavings);
 router.post("/terminate/savings",requireSignin,terminateSavings);
 router.get('/withdrawal/list',requireSignin,userwithdrawls);
 router.post('/update/profile/picture',requireSignin,parser,updatePic);
+router.get('/managers',mangers)
+
 module.exports = router;

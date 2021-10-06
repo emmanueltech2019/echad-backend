@@ -102,6 +102,10 @@ const userSchema = new Schema({
     startedSaving:{
         type:Boolean,
         default:false
+    },
+    manager:{
+        type:Schema.Types.ObjectId,
+        ref:"manager"
     }
 })
 

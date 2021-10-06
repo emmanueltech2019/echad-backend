@@ -15,6 +15,20 @@ const adminSchema = new Schema({
         required:true,
         trim:true
     },
+    address:{
+        type:String,
+        required:true,
+        trim:true
+    },
+    username:{
+        type:String,
+        required:true,
+        trim:true
+    },
+    role:{
+        type:String,
+        defualt:'manager'
+    }
 })
 
 

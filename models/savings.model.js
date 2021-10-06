@@ -25,4 +25,4 @@ const savingsSchema=new Schema({
         }
     ]
 })
-module.exports=model('savings',savingsSchema)
+    module.exports=model('savings',savingsSchema)

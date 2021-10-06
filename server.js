@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/v1',require('./routes/auth'))
 app.use('/api/v1/admin',require('./routes/admin'))
-
+app.use('/api/v1/manager',require('./routes/manager'))
 app.listen(PORT, () => {
   console.log(`app started on port ${PORT}`);
 });

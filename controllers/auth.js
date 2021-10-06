@@ -103,14 +103,15 @@ exports.updateAccount=(req,res)=>{
     const {phone,occupation,address,
         city,busstop,state,nationality,
         stateoforigin,nextofkinname,
-        nextofkinphone,bankname,accountname,accountnumber}=req.body
+        nextofkinphone,bankname,accountname,
+        accountnumber,manager}=req.body
 
     User.findOneAndUpdate({_id:id},
         {phone,occupation,address,
         city,busstop,state,nationality,
         stateoforigin,nextofkinname,
         nextofkinphone,uptodate:true,
-        bankname,accountname,accountnumber},(err,user)=>{
+        bankname,accountname,accountnumber,manager},(err,user)=>{
         if(err){
             return res.status(400).json({
                 message:'an error occured'
