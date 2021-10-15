@@ -8,7 +8,6 @@ const userSchema = new Schema({
     },
     email:{
         type:String,
-        required:true
     },
     password:{
         type:String,
@@ -20,6 +19,7 @@ const userSchema = new Schema({
     },
     phone:{
         type:String,
+        required:true
     },
     address:{
         type:String,

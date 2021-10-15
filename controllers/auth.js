@@ -6,10 +6,10 @@ const jwt = require('jsonwebtoken');
 const {SALT,APP_SECRET}=require('../config')
 
 exports.register=(req,res)=>{
-    const {email,password,fullname}=req.body
+    const {phone,password,fullname}=req.body
 
 
-    User.findOne({email},(err,user)=>{
+    User.findOne({phone},(err,user)=>{
         if(err){
             return res.status(400).json({
                 message:'an error occured'
@@ -17,7 +17,7 @@ exports.register=(req,res)=>{
         }
         if(user){
             return res.status(400).json({
-                message:'email already exist'
+                message:'phone number already exist'
             })
         }
         if(!user){
@@ -28,7 +28,7 @@ exports.register=(req,res)=>{
             let newUser = new User({
                 password:hash,
                 fullname,
-                email
+                phone
             })
 
        
@@ -46,8 +46,10 @@ exports.register=(req,res)=>{
                     token
                 })
             })
-            .catch(()=>{
+            .catch((err)=>{
+              console.log(err)
                 res.status(500).json({
+                  response:err.message,
                     message:'unknown error occured during account creation'
                 })
             })
@@ -57,8 +59,8 @@ exports.register=(req,res)=>{
 
 
 exports.login=(req,res)=>{
-    const { email, password } = req.body;
-  User.findOne({ email }, (err, user) => {
+    const { phone, password } = req.body;
+  User.findOne({ phone }, (err, user) => {
     if (err) {
       return res.status(400).json({
         message: "an error occured ",
@@ -104,14 +106,14 @@ exports.updateAccount=(req,res)=>{
         city,busstop,state,nationality,
         stateoforigin,nextofkinname,
         nextofkinphone,bankname,accountname,
-        accountnumber,manager}=req.body
+        accountnumber,manager,email}=req.body
 
     User.findOneAndUpdate({_id:id},
         {phone,occupation,address,
         city,busstop,state,nationality,
         stateoforigin,nextofkinname,
         nextofkinphone,uptodate:true,
-        bankname,accountname,accountnumber,manager},(err,user)=>{
+        bankname,accountname,accountnumber,manager,email},(err,user)=>{
         if(err){
             return res.status(400).json({
                 message:'an error occured'
@@ -206,7 +208,7 @@ exports.makepaymenttransfer=(req,res)=>{
         planid,
         date:new Date(),
         file:req.file.path,
-        email:user.email,
+        email:user.phone,
         approved:false,
         state:'pending'
       })
@@ -239,7 +241,6 @@ exports.withdrawSavings=(req,res)=>{
             return data._id==planid
           }
         })
-        console.log(savData)
         user.withdrawalRequestList.map((fd)=>{
           if(fd.planid==planid && fd.state=="pending"){
             user.history.push({
@@ -262,7 +263,7 @@ exports.withdrawSavings=(req,res)=>{
           name:savData[0].name,
           purpose:savData[0].purpose,
           state:"pending",
-          email:user.email
+          email:user.phone
 
         })
         user.withdrawalRequest=true
@@ -323,7 +324,7 @@ exports.terminateSavings=(req,res)=>{
         purpose,
         planid,
         date:new Date(),
-        email:user.email,
+        email:user.phone,
         userid:user._id,
         balance:returnedVal[0].balance,
         reoccuring:returnedVal[0].amount,

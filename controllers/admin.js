@@ -488,7 +488,6 @@ exports.approvewithdrawals = (req, res) => {
         if (amountToTake <= previousBalance) {
           let newBalance = previousBalance - amountToTake;
 
-          console.log("git");
           Savings.findOneAndUpdate(
             { "savings._id": planid },
             {
@@ -497,7 +496,6 @@ exports.approvewithdrawals = (req, res) => {
               },
             }
           ).then(() => {
-            console.log("heh");
             Users.findOneAndUpdate(
               {
                 email,
@@ -510,7 +508,6 @@ exports.approvewithdrawals = (req, res) => {
                 },
               }
             ).then((resp) => {
-              console.log(resp);
               resp.history.push({
                 date: new Date(),
                 type: "savings - withdrawal",
